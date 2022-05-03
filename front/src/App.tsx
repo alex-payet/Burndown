@@ -1,58 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import * as React from "react"
+import { useSelector, shallowEqual, useDispatch } from "react-redux"
+import "./App.css"
 
-function App() {
+import { Task } from "./components/task/Task"
+import { AddTask } from "./components/task/AddTask"
+import { addTask, removeTask } from "./store/actionCreators"
+import { Dispatch } from "redux"
+
+const App: React.FC = () => {
+  const Tasks: readonly ITask[] = useSelector(
+    (state: TaskState) => state.tasks,
+    shallowEqual
+  )
+
+  const dispatch: Dispatch<any> = useDispatch()
+
+  const saveTask = React.useCallback(
+    (Task: ITask) => dispatch(addTask(Task)),
+    [dispatch]
+  )
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    <main>
+      <h1>My Tasks</h1>
+      <AddTask saveTask={saveTask} />
+      {Tasks.map((task: ITask) => (
+        <Task
+          key={task.id}
+          task={task}
+          removeTask={removeTask}
+        />
+      ))}
+    </main>
+  )
 }
 
-export default App;
+export default App
